@@ -3,31 +3,87 @@
 @tailwind utilities;
 
 :root {
+  --primary: #274494;
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
 }
-
+/* 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
   }
-}
+} */ 
 
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
       transparent,
+      rgb(var(--background-start-rgb))
+      )
       rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+
+
+@keyframes fadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+} 
+
+@-webkit-keyframes fadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+.fade-in {
+  -webkit-animation-duration: 0.5s; 
+  /* es para que la animación dure 0.5 segundos */
+  animation-duration: 0.5s; 
+  -webkit-animation-fill-mode: both;
+  /* es para que la animación se quede en el estado final una vez terminada */
+  animation-fill-mode: both;
+
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn;
+}
+
+
+.btn-primary {
+  @apply shadow text-sm font-medium bg-blue-600 hover:bg-blue-800 text-white py-2 px-4 rounded transition-all;
+}
+
+.btn-secondary {
+  @apply shadow text-sm font-medium bg-gray-200 hover:bg-gray-300 text-black py-2 px-4 rounded transition-all;
+}
+
+.btn-white {
+  @apply shadow text-sm font-medium bg-white hover:bg-gray-100 text-black py-2 px-4 rounded transition-all;
+}
+
+.btn-google {
+  @apply inline-flex h-9 w-full items-center justify-center gap-2 rounded shadow bg-white hover:bg-gray-100 p-2 text-sm font-medium outline-none bg-disabled mb-4 tracking-wider;
+}
+
+.btn-link {
+  @apply p-[2px] md:p-2 rounded-full transition-all hover:bg-gray-100 dark:hover:bg-dhoverLink
+}
+
+.text-disabled  {
+  @apply disabled:text-gray-400 dark:disabled:text-gray-500 disabled:cursor-not-allowed;
+}
+
+.input-form {
+ @apply p-2 mt-1 border rounded-md bg-gray-100 text-gray-600 dark:text-dtext dark:bg-dhoverLink
+}
+
+.input-error {
+  @apply border-red-500 text-red-600;
+}
+
+.bg-disabled  {
+  @apply disabled:bg-gray-400 dark:disabled:bg-gray-400 disabled:cursor-not-allowed;
 }

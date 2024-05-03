@@ -1,0 +1,204 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Size {
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+  XXXL
+}
+
+enum Gender {
+  men
+  women
+  kids
+  unisex
+}
+
+enum Role {
+  admin
+  client
+  employee
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  // firstName     String?   @default("")
+  // lastName      String?   @default("")
+  isActive      Boolean   @default(true)
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(client)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relaciones
+  userAddress UserAddress?
+  orders      Order[]
+
+  // Relaciones Auth
+  accounts Account[]
+  sessions Session[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  title       String   @unique
+  description String   @default("")
+  inStock     Int
+  price       Float    @default(0)
+  sizes       Size[]   @default([])
+  slug        String   @unique
+  tags        String[] @default([])
+  gender      Gender
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  category   Category       @relation(fields: [categoryId], references: [id])
+  categoryId String
+  images     ProductImage[]
+  orderItems OrderItem[]
+
+  @@index([gender])
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  url       String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+}
+
+model Country {
+  // EL id sera el code del pais
+  id           String         @id
+  name         String         @unique
+  userAddress  UserAddress[]
+  orderAddress OrderAddress[]
+}
+
+model UserAddress {
+  id         String @id @default(uuid())
+  firstName  String
+  lastName   String
+  address    String
+  address2   String @default("")
+  postalCode String
+  phone      String
+  department String
+  province   String
+  district   String
+
+  // Relaciones
+  country   Country @relation(fields: [countryId], references: [id])
+  countryId String
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String  @unique
+}
+
+model Order {
+  id           String    @id @default(uuid())
+  subTotal     Float
+  tax          Float
+  total        Float
+  itemsInOrder Int
+  isPaid       Boolean  @default(false)
+  // delivered    DateTime?
+  paidAt       DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relaciones
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String
+  orderItems   OrderItem[]
+  orderAddress OrderAddress?
+
+  transactionId String?
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  quantity  Int
+  price     Float
+  size      Size
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+}
+
+model OrderAddress {
+  id         String @id @default(uuid())
+  firstName  String
+  lastName   String
+  address    String
+  address2   String @default("")
+  postalCode String
+  phone      String
+  department String
+  province   String
+  district   String
+
+  // Relaciones
+  country   Country @relation(fields: [countryId], references: [id])
+  countryId String
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String  @unique
+}
