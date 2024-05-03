@@ -53,3 +53,13 @@ Aplicación Teslo Shop inspirada en Tesla para el desarrollo de un ecommerce des
 ```
 
 ## Correr en prod
+1. Crear la base de datos.
+2. Copiar el DATABASE_URL de produccion en nuestro .env
+3. Correr las migraciones en deploy
+``` 
+  npx prisma migrate deploy 
+```
+4. Correr el Seed
+``` 
+  npm run seed
+```
